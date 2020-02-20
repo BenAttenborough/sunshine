@@ -2,78 +2,80 @@ document.addEventListener("DOMContentLoaded", function() {
   console.log("Your document is ready!");
   console.log("Hello world");
 
+  let sunSpec = {
+    x: 200,
+    y: 100,
+    width: 300,
+    height: 100,
+    isMoving: false
+  };
+
+  let startX, startY;
+
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
-
-  //   ctx.fillStyle = "blue";
-  //   ctx.fillRect(0, 0, 1000, 500);
-  //   ctx.beginPath();
-  //   ctx.arc(30, 30, 20, 0, 180);
-  //   ctx.fillStyle = "yellow";
-  //   ctx.fill();
-  //   ctx.addHitRegion({ id: "sun" });
-  //   ctx.closePath();
-  //   canvas.addEventListener("mousedown", e => {
-  //     console.log("Mousedown");
-  //   });
-  const bg = new Path2D();
-  bg.rect(0, 0, 1000, 500);
-  ctx.fillStyle = "blue";
-  ctx.fill(bg);
-  const circle = new Path2D();
-  circle.arc(150, 75, 50, 0, 2 * Math.PI);
-  circle.message = "Hello";
-  circle.isMoving = false;
-  ctx.fillStyle = "yellow";
-  ctx.fill(circle);
-  //   let grd;
-  //   grd = ctx.createRadialGradient(180.0, 300.0, 0.0, 180.0, 300.0, 150.0);
-
-  // Add colors
-  //   grd.addColorStop(0.0, "rgba(255, 242, 0, 1.000)");
-  //   grd.addColorStop(0.37, "rgba(255, 157, 0, 1.000)");
-  //   grd.addColorStop(1.0, "rgba(47, 32, 163, 1.000)");
-
-  // Fill with gradient
-  //   ctx.fillStyle = grd;
-  //   ctx.fillRect(0, 0, 300.0, 300.0);
-  //   canvas.addEventListener("mousemove", function(event) {
-  //     ctx.clearRect(0, 0, canvas.width, canvas.height);
-  //     ctx.fillStyle = "blue";
-  //     ctx.fill(bg);
-  //     // Check whether point is inside circle
-  //     if (ctx.isPointInPath(circle, event.offsetX, event.offsetY)) {
-  //       ctx.fillStyle = "red";
-  //     } else {
-  //       ctx.fillStyle = "yellow";
-  //     }
-
-  //     // Draw circle
-
-  //     ctx.fill(circle);
-  //   });
+  ctx.fillStyle = "rgb(150,150,250)";
+  ctx.fillRect(0, 0, 1000, 1000);
+  drawSun(canvas, ctx, sunSpec);
 
   canvas.addEventListener("mousedown", function(event) {
-    console.log(circle.message);
-    console.log(event);
-    circle.isMoving = true;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "blue";
-    ctx.fill(bg);
-    // Check whether point is inside circle
-    if (ctx.isPointInPath(circle, event.offsetX, event.offsetY)) {
-      ctx.fillStyle = "red";
-    } else {
-      ctx.fillStyle = "yellow";
+    event.preventDefault();
+    event.stopPropagation();
+    // console.log("Mouse down");
+    // console.log(event);
+    var { offsetX, offsetY } = event;
+    // console.log("offsetX", offsetX);
+    // console.log("offsetY", offsetY);
+    let isOffsetXwithinShape =
+      offsetX >= sunSpec.x && offsetX <= sunSpec.x + sunSpec.width;
+    // console.log("isOffsetXwithinShape", isOffsetXwithinShape);
+
+    let isOffsetYwithinShape =
+      offsetY >= sunSpec.y && offsetY <= sunSpec.y + sunSpec.height;
+    // console.log("isOffsetYwithinShape", isOffsetYwithinShape);
+
+    let isPointerWithinShape = isOffsetXwithinShape && isOffsetYwithinShape;
+    console.log("isPointerWithinShape", isPointerWithinShape);
+    if (isPointerWithinShape) {
+      sunSpec.isMoving = true;
     }
 
-    // Draw circle
+    // save the current mouse position
+    startX = offsetX;
+    startY = offsetY;
+  });
 
-    ctx.fill(circle);
+  canvas.addEventListener("mouseup", function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    console.log("Mouse up");
+    sunSpec.isMoving = false;
   });
 
   canvas.addEventListener("mousemove", function(event) {
-    console.log("fff");
+    if (sunSpec.isMoving) {
+      var { offsetX, offsetY } = event;
+      //   var thingX = sunSpec.x + (sunSpec.x - offsetX);
+      //   console.log("sunSpec.x", sunSpec.x);
+      //   console.log("offsetX", offsetX);
+      //   console.log("startX", startX);
+      //   console.log("startY", startY);
+      //   sunSpec.x = offsetX + startX;
+      //   sunSpec.y = offsetY + startY;
+      //   drawSun(canvas, ctx, sunSpec);
+      //   startX = offsetX;
+      //   startY = offsetY;
+      sunSpec.x = offsetX;
+      sunSpec.y = offsetY;
+      drawSun(canvas, ctx, sunSpec);
+    }
   });
-  canvas.addEventListener("mouseup", function(event) {});
 });
+
+function drawSun(canvas, ctx, sunSpec) {
+  ctx.fillStyle = "rgb(150,150,250)";
+  ctx.fillRect(0, 0, 1000, 1000);
+  ctx.beginPath();
+  ctx.fillStyle = "yellow";
+  ctx.fillRect(sunSpec.x, sunSpec.y, sunSpec.width, sunSpec.height);
+}
